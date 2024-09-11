@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>{block name="title-before"}{/block}{:config('app_name')}{block name="title-after"}{/block}</title>
+    <meta name="keywords" content="短链接,短网址,短网址生成,网址缩短,短链接,短域名,短网址服务,短地址,缩短网址,dlj,dwz,dlj.biz,点链接">
+    <meta name="description" content="点链接(dlj.biz) - 可靠的短链接服务。免费专业的网址缩短服务，具有稳定、快速、安全的特点，支持连接缩短、短链接还原、数据报表、开放API接口等服务">
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/layui-theme-custom.css?t=12345678">
+    <style>
+        body{background: #f1f4f8;}
+        .theme-color{color:#335eea}
+        .bg-primary{background: #335eea}
+        .dlj-nav{background-color: #ffffff;margin-left: 7.5rem;display: inline-block}
+        .dlj-nav .layui-nav-item > a {line-height:5rem;color: #323131!important;font-size: 1rem;font-weight: 500}
+        .dlj-nav .layui-this a {color: #335eea!important;}
+        .dlj-page header{background: #ffffff}
+        .shorten-form .input-box, .reduction-form .input-box {position: relative}
+        .shorten-form .input-box button, .reduction-form .input-box button{position: absolute;top:0;right: 0}
+        .layui-input, .layui-btn{border-radius: 0}
+        .footer {
+            padding: 1.85rem 0;
+            line-height: 1.85rem;
+            text-align: center;
+            color: #666;
+            font-weight: 300;
+            margin-top: 1.85rem;
+        }
+    </style>
+    {block name="style"}{/block}
+</head>
+<body>
+
+<div class="dlj-page">
+    {if !$user}
+    <div class="top-nav bg-primary">
+        <div class="layui-container">
+            <a href="{:url('user/login')}">
+                <p style="padding: 10px 0;text-align: center;color: #ffffff">
+                    登录后生成的短链接，更方便监控访问数据，点击本栏登录
+                </p>
+            </a>
+        </div>
+    </div>
+    {/if}
+    <header>
+        <div class="layui-container">
+            <a href="/" style="line-height: 5rem">
+                <img src="/static/img/logos/dlj_biz.svg" alt="{:config('app.app_name')}">
+            </a>
+            <ul class="layui-nav dlj-nav layui-hide-xs" style="float: right;padding: 0">
+                <li class="layui-nav-item {eq name='navItem' value='1'}layui-this{/eq}"><a href="/">首页</a></li>
+                <li class="layui-nav-item {eq name='navItem' value='4'}layui-this{/eq}"><a href="{:url('index/tj')}">访问统计</a></li>
+                <li class="layui-nav-item {eq name='navItem' value='2'}layui-this{/eq}"><a href="{:url('index/doc')}">接口文档</a></li>
+                <li class="layui-nav-item {eq name='navItem' value='3'}layui-this{/eq}"><a href="{:url('index/faq')}">常见问题</a></li>
+                <li class="layui-nav-item"><a href="https://dlj.biz/2D9" target="_blank">Chrome 插件</a></li>
+                <li class="layui-nav-item"><a href="https://dlj.biz/tgc" target="_blank">吐个槽</a></li>
+                <li class="layui-nav-item"><a href="{:url('user/index')}" style="padding-right: 0">个人中心</a></li>
+            </ul>
+            <ul class="layui-nav dlj-nav layui-hide layui-show-xs-block" style="float: right;padding: 0;">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" style="line-height: 4.75rem"><i class="layui-icon layui-icon-spread-left" style="font-size: 1.375rem"></i></a>
+                    <dl class="layui-nav-child" style="z-index: 999999;margin-left: -2rem;">
+                        <dd><a href="/">首页</a></dd>
+                        <dd><a href="{:url('index/tj')}">访问统计</a></dd>
+                        <dd><a href="{:url('index/doc')}">接口文档</a></dd>
+                        <dd><a href="{:url('index/faq')}">常见问题</a></dd>
+                        <dd><a href="https://dlj.biz/2D9" target="_blank">Chrome 插件</a></dd>
+                        <dd><a href="https://dlj.biz/tgc" target="_blank">吐个槽</a></dd>
+                        <dd><a href="{:url('user/index')}" style="padding-right: 0">个人中心</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div>
+        <div class="layui-container">
+            {block name="main"}
+
+            {/block}
+        </div>
+    </div>
+    <div class="footer">
+        <p>
+            © 2019{if date('Y') != 2019} - {:date('Y')}{/if} {:config('app_name')}
+            <a target="_blank" href="http://beian.miit.gov.cn">粤ICP备19006724号</a>
+            <a href="https://dlj.biz/tgc" target="_blank">问题反馈</a>
+        </p>
+        <p>
+            友情链接：
+            <a href="https://newphper.com/" target="_blank">NewPHPer</a>
+            <a style="margin-left: 1rem" href="javascript:;" onclick="showContact('申请友链')">申请友链</a>
+        </p>
+    </div>
+</div>
+<script src="/static/layui/layui.js"></script>
+<script>
+    function showContact(title) {
+        layer.alert('请添加客服微信：<br><div style="height: 200px;text-align: center"><img height="100%" src="/static/img/kefu_wechat.jpg"></div><br> 请备注：'+title, {title:false,btn:false});
+    }
+</script>
+{block name="script"}
+{/block}
+{php}
+    if(!config('app_debug')){
+        echo '<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?345f55d995b55a591b024268eeb1a5d4";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>';
+    }
+{/php}
+</body>
+</html>

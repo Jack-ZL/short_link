@@ -1,0 +1,19 @@
+@font-face {font-family: 'webfontXWH';
+    src: url('//at.alicdn.com/t/webfont_oegjypdg6q8.eot'); /* IE9*/
+    src: url('//at.alicdn.com/t/webfont_oegjypdg6q8.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('//at.alicdn.com/t/webfont_oegjypdg6q8.woff') format('woff'), /* chrome、firefox */
+    url('//at.alicdn.com/t/webfont_oegjypdg6q8.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url('//at.alicdn.com/t/webfont_oegjypdg6q8.svg#站酷小薇体') format('svg'); /* iOS 4.1- */
+}
+@font-face {font-family: 'webfont';
+    src: url('//at.alicdn.com/t/webfont_bzlx8ld9azv.eot'); /* IE9*/
+    src: url('//at.alicdn.com/t/webfont_bzlx8ld9azv.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('//at.alicdn.com/t/webfont_bzlx8ld9azv.woff') format('woff'), /* chrome、firefox */
+    url('//at.alicdn.com/t/webfont_bzlx8ld9azv.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url('//at.alicdn.com/t/webfont_bzlx8ld9azv.svg#站酷高端黑') format('svg'); /* iOS 4.1- */
+}
+a:hover,a:active{color:#335eea}
+.layui-nav .layui-this:after{display: none}
+.layui-input, .layui-btn{border-radius: 0}
+
+.layui-layout-admin .layui-logo{color:#335eea}.layui-elem-quote{border-left-color:#335eea}.layui-btn{background-color:#335eea}.layui-btn-primary{background-color:#fff}.layui-btn-primary:hover{border-color:#335eea}.layui-btn-group .layui-btn-primary:hover{color:#335eea}.layui-laypage a:hover{color:#335eea}.layui-laypage .layui-laypage-curr .layui-laypage-em{background-color:#335eea}.layui-laypage select:focus{border-color:#335eea!important}.layui-upload-drag .layui-icon{font-size:50px;color:#335eea}.layui-upload-drag[lay-over]{border-color:#335eea}.layui-nav-tree .layui-nav-child dd.layui-this a{background-color:#335eea}.layui-nav-tree .layui-nav-bar{background-color:#335eea}.layui-tab-brief>.layui-tab-title .layui-this{color:#335eea}.layui-slider-input-btn i:hover{color:#335eea}.layui-slider-wrap-btn{border-color:#335eea!important}.layui-slider-bar{background:#335eea!important}html .layui-laydate .layui-this{background-color:#335eea!important}.laydate-theme-molv .layui-laydate-header{background-color:#335eea}.laydate-theme-grid .laydate-selected,.laydate-theme-grid .laydate-selected:hover{color:#335eea!important}.layui-progress-bar{background-color:#335eea1a}.layui-form-select dl dd.layui-this{background-color:#335eea1a}.layui-form-checked,.layui-form-checked:hover{border-color:#335eea1a}.layui-form-checked span,.layui-form-checked:hover span{background-color:#335eea1a}.layui-form-checked i,.layui-form-checked:hover i{color:#335eea1a}.layui-form-checkbox[lay-skin=primary]:hover i{border-color:#335eea1a}.layui-form-checked[lay-skin=primary] i{border-color:#335eea1a;background-color:#335eea1a}.layui-form-onswitch{border-color:#335eea1a;background-color:#335eea1a}.layui-form-radio>i:hover,.layui-form-radioed>i{color:#335eea1a}.layui-table-edit:focus{border-color:#335eea1a!important}.layui-nav-tree .layui-nav-itemed:after{background-color:#335eea1a}.layui-nav-child dd.layui-this{background-color:#335eea1a}.layui-nav .layui-nav-child dd.layui-this a{background-color:#335eea1a}.layui-breadcrumb a:hover{color:#335eea1a!important}.layui-tab-brief>.layui-tab-more li.layui-this:after,.layui-tab-brief>.layui-tab-title .layui-this:after{border-bottom:2px solid #335eea1a}.layui-tab-card>.layui-tab-more .layui-this{color:#335eea1a}.layui-timeline-axis{color:#335eea1a}.laydate-day-mark::after{background-color:#335eea1a!important}.layui-laydate-header i:hover,.layui-laydate-header span:hover{color:#335eea1a!important}.layui-laydate-footer span:hover{color:#335eea1a!important}.layui-nav .layui-this:after,.layui-nav-bar,.layui-nav-tree .layui-nav-itemed:after{background-color:#335eea1a!important}

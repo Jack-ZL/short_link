@@ -1,0 +1,29 @@
+{extend name="layout/layui" /}
+{block name="title-before"}常见问题 - {/block}
+{block name="main"}
+<div style="margin-top: 30px;background-color: #ffffff;padding: 15px">
+    <div class="layui-collapse" lay-accordion>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">1、短链接有效期是多久？</h2>
+            <div class="layui-colla-content">
+                答：目前创建的短链接是长期有效。后续如果短链接有效期有所调整会第一时间通知大家。
+            </div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">2、DLJ.BIZ 的短链接服务是否是免费的？</h2>
+            <div class="layui-colla-content">答：短链接服务目前都是免费的。我们会持续不断优化产品为用户带来更好的用户体验。</div>
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">3、短链接生成服务以及API调用是否限制次数？</h2>
+            <div class="layui-colla-content">答：目前短链接生成服务以及API调用是免费的并且不限制次数，请放心使用。后续如果有所调整会第一时间在官网通知大家，请持续关注官网动态。</div>
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+<script>
+    layui.use(['element','layer'], function(){})
+</script>
+{/block}

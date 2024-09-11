@@ -1,0 +1,196 @@
+{extend name="layout/layui" /}
+{block name="title-before"}访问统计 - {/block}
+
+{block name="style"}
+<style>
+    .input-box {position: relative}
+    .input-box button{position: absolute;top:0;right: 0}
+    .input-box .layui-input{height: 3.625rem;font-size: 1.125rem;}
+    .input-box .submit-btn{height: 3.625rem;line-height: 3.625rem;font-size: 1.125rem}
+</style>
+{/block}
+
+{block name="main"}
+<div class="layui-card" style="margin-top: 30px;">
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <div class="layui-form-item input-box">
+                <input type="text" name="shortUrl" placeholder="请输入短链接" class="layui-input" lay-verify="url" lay-verType="tips" style="padding-right: 6.375rem;">
+                <button lay-submit lay-filter="tongji" class="layui-btn submit-btn">查看统计</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="layui-card" id="flowBox">
+
+</div>
+
+<div class="layui-card layui-hide" id="moreBox">
+    <div class="layui-card-header">
+        更多统计，敬请期待
+    </div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        我的短链接
+    </div>
+    <div class="layui-card-body">
+        {if $user}
+        <div class="layui-elem-quote">
+            温馨提示：<br>
+            单击<strong>长链接</strong>单元格可更换要跳转的长链接哦
+        </div>
+        <table class="layui-hide" id="urls" lay-filter="url"></table>
+        {else /}
+        <p style="text-align: center">
+            登录后生成的短链接才能在这显示，<a class="layui-btn layui-btn-sm" href="{:url('user/login')}">立即登录</a>
+
+        </p>
+        {/if}
+    </div>
+</div>
+
+{/block}
+
+{block name="script"}
+
+<script type="text/html" id="flowTpl">
+    <div class="layui-card-header">
+        流量概览
+    </div>
+    <div class="layui-card-body">
+        <table class="layui-table" lay-skin="row">
+            <tbody>
+            <tr>
+                <th></th>
+                <th>浏览量(PV)</th>
+                <th>访客数(UV)</th>
+                <th>IP数</th>
+            </tr>
+            <tr style="font-weight: bold">
+                <td>今日</td>
+                <td>{{d.today.pv}}</td>
+                <td>{{d.today.uv}}</td>
+                <td>{{d.today.ip}}</td>
+            </tr>
+            <tr>
+                <td>昨日</td>
+                <td>{{d.yesterday.pv}}</td>
+                <td>{{d.yesterday.uv}}</td>
+                <td>{{d.yesterday.ip}}</td>
+            </tr>
+            <tr>
+                <td>总</td>
+                <td>{{d.total.pv}}</td>
+                <td>{{d.total.uv}}</td>
+                <td>{{d.total.ip}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</script>
+
+<script type="text/html" id="barUrls">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">访问统计</a>
+</script>
+
+<script>
+    layui.use(['layer', 'form', 'element', 'jquery', 'laytpl', 'table'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laytpl = layui.laytpl
+            ,table = layui.table
+            ,element = layui.element
+            ,$ = layui.jquery
+            ,loading;
+
+        function showTj(data){
+            loading = layer.load();
+            data.type = 'flow';
+            $.ajax({
+                url:"{:url('api/tj')}"
+                ,data: data
+                ,success: function (res) {
+                    layer.close(loading);
+                    if(res.code === 1){
+                        var view = document.getElementById('flowBox');
+                        laytpl(flowTpl.innerHTML).render(res.data, function(html){
+                            view.innerHTML = html;
+                        });
+                        $("#moreBox").show();
+                    } else {
+                        layer.msg(res.msg)
+                    }
+                }
+                ,error: function () {
+                    layer.close(loading);
+                }
+            });
+        }
+
+        form.on('submit(tongji)', function(data){
+            if (data.field.shortUrl){
+                showTj(data.field)
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        var MyUrls = table.render({
+            elem: '#urls'
+            ,url: "{:url('user/urls')}"
+            ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,cols: [[
+                {field:'id', width:80, title: 'ID', sort: true}
+                ,{field:'short', minWidth:140, title: '短链接'}
+                ,{field:'url', minWidth:200, title: '长链接', edit: 'text'}
+                ,{field:'create_time', width:160, title: '创建时间', sort: true}
+                ,{field:'clicks', width:80, title: '点击量', sort: true}
+                ,{fixed: 'right', width:120, align:'center', toolbar: '#barUrls'}
+            ]]
+            ,response: {
+                countName: 'total' //规定数据总数的字段名称，默认：count
+            }
+            ,page: true
+        });
+
+        //监听工具条
+        table.on('tool(url)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                showTj({shortUrl: data.short})
+            }
+        });
+
+        //监听单元格编辑
+        table.on('edit(url)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            if (field === 'url'){
+                loading = layer.load();
+                $.ajax({
+                    url:"{:url('changJumpUrl')}"
+                    ,data: {id:data.id,url:value}
+                    ,type: 'post'
+                    ,complete: function () {
+                        layer.close(loading);
+                        MyUrls.reload();
+                    }
+                    ,success: function (res) {
+                        if(res.code === 1){
+                            layer.alert('修改成功！')
+                        } else {
+                            layer.msg(res.msg)
+                        }
+                    }
+                    ,error: function () {
+                        layer.msg('遇到错误，修改失败！');
+                    }
+                });
+            }
+        });
+    })
+</script>
+{/block}

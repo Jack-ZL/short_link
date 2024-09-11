@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {include file="common/meta" /}
+        <link href="__CDN__/assets/css/user.css?v={$Think.config.site.version}" rel="stylesheet">
+        <style>
+            .form-group.has-success .form-control, .form-group.has-success .input-group-addon {
+                border-color: #335eea;
+            }
+            .form-group.has-success label {
+                color: #335eea;
+            }
+            .btn-primary {
+                color: #fff;
+                background-color: #335eea!important;
+                border-color: #335eea!important;
+            }
+            .sidenav .list-group .list-group-item.active > a {
+                color: #335eea;
+            }
+            .sidenav .list-group .list-group-item.active {
+                border-left: 2px solid #335eea;
+            }
+            .btn-success {
+                color: #fff;
+                background-color: #335eea!important;
+                border-color: #335eea!important;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{:url('/')}" style="padding:6px 15px;"><img src="/static/img/logos/dlj_biz.svg" alt="{:config('app.app_name')}"></a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="content">
+            {__CONTENT__}
+        </main>
+
+        {include file="common/script" /}
+
+        {php}
+        if(!config('app_debug')){
+        echo '<script>
+            var _hmt = _hmt || [];
+            (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?345f55d995b55a591b024268eeb1a5d4";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        </script>';
+        }
+        {/php}
+    </body>
+
+</html>

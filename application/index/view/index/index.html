@@ -1,0 +1,201 @@
+{extend name="layout/layui" /}
+{block name="title-after"} - 可靠的短链接服务{/block}
+
+{block name="style"}
+<style>
+    .layui-tab-title{height: 3.75rem}
+    .layui-tab-title li{line-height: 3.75rem}
+    .layui-tab-title .layui-this:after{height: 3.8125rem}
+    .layui-card .layui-input{height: 3.625rem;font-size: 1.125rem;}
+    .layui-card .submit-btn{height: 3.625rem;line-height: 3.625rem;font-size: 1.125rem}
+</style>
+{/block}
+{block name="main"}
+    <div class="layui-row">
+        <div style="padding: 3rem 0;text-align: center;letter-spacing:3px;">
+            <h1 style="font-size: 2rem">可靠的<span class="theme-color">短链接</span>服务</h1>
+            <p style="font-size: 1.125rem;color:#333;margin-top: 1.25rem">为你的业务赋能</p>
+        </div>
+        <div class="layui-elem-quote">
+            温馨提示：<br>
+            登录后，在访问统计-我的短链接，单击<strong>长链接</strong>单元格可更换要跳转的长链接哦
+        </div>
+        <div class="layui-card" style="min-height: 21rem">
+            <div class="layui-tab layui-tab-brief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">缩短链接</li>
+                    <li>自定义后缀</li>
+                    <li>链接还原</li>
+                </ul>
+                <div class="layui-tab-content" style="padding:1.875rem">
+                    <div class="layui-tab-item layui-show">
+                        <form class="layui-form shorten-form">
+                            <div class="layui-form-item input-box">
+                                <input type="text" name="url" placeholder="请输入长链接" class="layui-input" lay-verify="url" lay-verType="tips" style="padding-right: 6.375rem">
+                                <button lay-submit lay-filter="shorten" class="layui-btn submit-btn">缩短链接</button>
+                            </div>
+                            <div id="afterShorten"></div>
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">
+                        <form class="layui-form custom-form">
+                            <div class="layui-form-item">
+                                <input type="text" name="url" placeholder="请输入长链接" class="layui-input" lay-verify="url" lay-verType="tips" style="padding-right: 6.375rem;">
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-inline" style="margin-right: 0;font-size: 1.125rem">
+                                    {$Request.domain}/
+                                </div>
+                                <div class="layui-inline" style="margin-right: 0">
+                                    <input type="text" name="keyword" placeholder="请输入后缀" class="layui-input" lay-verify="required" lay-verType="tips">
+                                </div>
+                                <button lay-submit lay-filter="custom" class="layui-btn submit-btn" style="margin-left:-0.3125rem;margin-top:-0.3125rem">缩短链接</button>
+                            </div>
+                            <div id="afterShortenCustom"></div>
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">
+                        <form class="layui-form reduction-form">
+                            <div class="layui-form-item input-box">
+                                <input type="text" name="shortUrl" placeholder="请输入短链接" class="layui-input" lay-verify="url" lay-verType="tips" style="padding-right: 6.375rem;">
+                                <button lay-submit lay-filter="reduction" class="layui-btn submit-btn">还原链接</button>
+                            </div>
+                            <div id="afterReduction"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/block}
+{block name="script"}
+<script type="text/html" id="AfterTpl">
+    <div class="layui-form-item">
+        <div class="layui-word-aux layui-inline">
+            短链接：<a href="{{ d.ShortUrl }}" target="_blank" class="theme-color" id="dlj">{{ d.ShortUrl }}</a>
+        </div>
+        <button type="button" class="layui-btn layui-btn-xs" id="copy" data-clipboard-target="#dlj">复制</button>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-word-aux layui-inline">
+            原链接：<a href="{{ d.LongUrl }}" target="_blank">{{ d.LongUrl }}</a>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="CustomTpl">
+    <div class="layui-form-item">
+        <div class="layui-word-aux layui-inline">
+            短链接：<a href="{{ d.ShortUrl }}" target="_blank" class="theme-color" id="dljC">{{ d.ShortUrl }}</a>
+        </div>
+        <button type="button" class="layui-btn layui-btn-xs" id="copyC" data-clipboard-target="#dljC">复制</button>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-word-aux layui-inline">
+            原链接：<a href="{{ d.LongUrl }}" target="_blank">{{ d.LongUrl }}</a>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="RTpl">
+    <div class="layui-form-item">
+        <div class="layui-word-aux layui-inline">
+            原链接：<a href="{{ d.LongUrl }}" target="_blank">{{ d.LongUrl }}</a>
+        </div>
+    </div>
+</script>
+<script src="/static/js/clipboard.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'element', 'jquery', 'laytpl'], function(){
+        var layer = layui.layer
+            ,form = layui.form
+            ,laytpl = layui.laytpl
+            ,element = layui.element
+            ,$ = layui.jquery;
+        form.on('submit(shorten)', function(data){
+            if (data.field.url){
+                $.ajax({
+                    url: "{:url('api/create')}",
+                    data: JSON.stringify(data.field),
+                    type: "post",
+                    headers: {"Content-Type":"application/json", "Token": '{$token|default=""}'},
+                    success: function (res) {
+                        if(res.Code === 0){
+                            var view = document.getElementById('afterShorten');
+                            laytpl(AfterTpl.innerHTML).render(res, function(html){
+                                view.innerHTML = html;
+                            });
+                        } else {
+                            layer.msg(res.ErrMsg)
+                        }
+                    }
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('submit(custom)', function(data){
+            if (data.field.url){
+                $.ajax({
+                    url: "{:url('api/create')}",
+                    data: JSON.stringify(data.field),
+                    type: "post",
+                    headers: {"Content-Type":"application/json", "Token": '{$token|default=""}'},
+                    success: function (res) {
+                        if(res.Code === 0){
+                            var view = document.getElementById('afterShortenCustom');
+                            laytpl(CustomTpl.innerHTML).render(res, function(html){
+                                view.innerHTML = html;
+                            });
+                        } else {
+                            layer.msg(res.ErrMsg)
+                        }
+                    }
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('submit(reduction)', function(data){
+            if (data.field.shortUrl){
+                $.post("{:url('api/query')}",data.field,function (res) {
+                    if(res.Code === 0){
+                        var view = document.getElementById('afterReduction');
+                        laytpl(RTpl.innerHTML).render(res, function(html){
+                            view.innerHTML = html;
+                        });
+                    } else {
+                        $("#afterReduction").html('');
+                        layer.msg(res.ErrMsg)
+                    }
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        // 复制
+        var clipboard = new ClipboardJS('#copy');
+        clipboard.on('success', function(e) {
+            layer.tips('已复制', '#copy', {tips: 1});
+        });
+        var clipboard_c = new ClipboardJS('#copyC');
+        clipboard_c.on('success', function(e) {
+            layer.tips('已复制', '#copyC', {tips: 1});
+        });
+
+        //示范一个公告层
+        // layer.open({
+        //     type: 1
+        //     ,title: false //不显示标题栏
+        //     ,closeBtn: false
+        //     ,area: '300px;'
+        //     ,shade: false
+        //     ,offset: 'rt'
+        //     ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+        //     ,btn: ['知道了']
+        //     ,btnAlign: 'c'
+        //     ,moveType: 1 //拖拽模式，0或者1
+        //     ,content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">温馨提示：<br><br>为了支持广大用户的运营需求，同一个长链接，每次缩短请求都会刷新短链接，历史生成的短链接依然生效哦~<br><br>感谢 Jack Long 同学的反馈。</div>'
+        // });
+    });
+</script>
+{/block}

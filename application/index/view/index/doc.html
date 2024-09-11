@@ -1,0 +1,683 @@
+{extend name="layout/layui" /}
+{block name="title-before"}接口文档 - {/block}
+{block name="style"}
+<style>
+    .ul{margin-left: 30px;margin-bottom: 60px}
+    .ul h3{margin: 20px 0 10px 0;}
+    .ul > li {margin-left:30px;list-style-type: square;}
+    pre{
+        height: 400px;
+        overflow-y: scroll;
+    }
+</style>
+{/block}
+{block name="main"}
+<div style="margin-top: 30px;background-color: #ffffff;padding: 15px">
+
+
+    <div class="layui-elem-quote">
+        <p>PHP Composer 包安装: <span style="font-weight: bold">composer require lunzi/dlj</span></p>
+        <p><a target="_blank" style="color: blue" href="https://github.com/LunziSTU/dlj.biz-php">使用文档、GitHub 地址</a></p>
+    </div>
+    <div class="layui-elem-quote">
+        <h2>短链接生成接口</h2>
+    </div>
+    <ul class="ul">
+        <h3>请求地址</h3>
+        <li>
+            <span>{$Request.domain}/api/create</span>
+        </li>
+        <h3>请求方式</h3>
+        <li>
+            <span>POST</span>
+        </li>
+        <h3>Content-Type:</h3>
+        <li>
+            <span>application/json; charset=UTF-8</span>
+        </li>
+        <h3>请求参数（Body）</h3>
+        <div style="width: 100%;overflow-x: scroll">
+            <table class="layui-table">
+                <thead>
+                <tr>
+                    <th>字段</th>
+                    <th>类型</th>
+                    <th>是否必须</th>
+                    <th>说明</th>
+                    <th>示例</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>url</td>
+                    <td>string</td>
+                    <td>必须</td>
+                    <td>长网址</td>
+                    <td>"{$Request.domain}"</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <h3>请求示例</h3>
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">Java</li>
+                <li>curl</li>
+                <li>Javascript</li>
+                <li>PHP</li>
+                <li>Python</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 15px 0">
+                <div class="layui-tab-item layui-show">
+                    <pre class="layui-code">
+
+    import java.io.IOException;
+    import java.io.OutputStreamWriter;
+    import java.net.HttpURLConnection;
+    import java.net.URL;
+    import java.io.BufferedReader;
+    import java.io.InputStreamReader;
+
+    import com.google.gson.Gson;
+    import com.google.gson.annotations.SerializedName;
+
+    public class Dlj {
+        final static String CREATE_API = "{$Request.domain}/api/create";
+
+        class UrlResponse {
+            @SerializedName("Code")
+            private int code;
+
+            @SerializedName("ErrMsg")
+            private String errMsg;
+
+            @SerializedName("LongUrl")
+            private String longUrl;
+
+            @SerializedName("ShortUrl")
+            private String shortUrl;
+
+            public int getCode() {
+                return code;
+            }
+
+            public void setCode(int code) {
+                this.code = code;
+            }
+
+            public String getErrMsg() {
+                return errMsg;
+            }
+
+            public void setErrMsg(String errMsg) {
+                this.errMsg = errMsg;
+            }
+
+            public String getLongUrl() {
+                return longUrl;
+            }
+
+            public void setLongUrl(String longUrl) {
+                this.longUrl = longUrl;
+            }
+
+            public String getShortUrl() {
+                return shortUrl;
+            }
+
+            public void setShortUrl(String shortUrl) {
+                this.shortUrl = shortUrl;
+            }
+        }
+
+        /**
+         * 创建短网址
+         *
+         * @param longUrl
+         *            长网址：即原网址
+         * @return  成功：短网址
+         *          失败：返回空字符串
+         */
+        public static String createShortUrl(String longUrl) {
+            String params = "{\"url\":\""+ longUrl + "\"}";
+
+            BufferedReader reader = null;
+            try {
+                // 创建连接
+                URL url = new URL(CREATE_API);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setUseCaches(false);
+                connection.setInstanceFollowRedirects(true);
+                connection.setRequestMethod("POST"); // 设置请求方式
+                connection.setRequestProperty("Content-Type", "application/json"); // 设置发送数据的格式
+
+                // 发起请求
+                connection.connect();
+                OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8"); // utf-8编码
+                out.append(params);
+                out.flush();
+                out.close();
+
+                // 读取响应
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                String line;
+                String res = "";
+                while ((line = reader.readLine()) != null) {
+                    res += line;
+                }
+                reader.close();
+
+                // 抽取生成短网址
+                UrlResponse urlResponse = new Gson().fromJson(res, UrlResponse.class);
+                if (urlResponse.getCode() == 0) {
+                    return urlResponse.getShortUrl();
+                } else {
+                    System.out.println(urlResponse.getErrMsg());
+                }
+
+                return ""; // TODO：自定义错误信息
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+            return ""; // TODO：自定义错误信息
+        }
+
+        public static void main(String[] args) {
+            String res = createShortUrl("你的长网址");
+            System.out.println(res);
+
+        }
+
+    }
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">    curl -H "Content-Type:application/json" -X POST "{$Request.domain}/api/create" -d '{"url":"你的长网址"}'
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    var ajax = new XMLHttpRequest();
+    var longUrl = '你的长网址';
+
+    ajax.open('post','{$Request.domain}/api/create', true);
+
+    ajax.setRequestHeader("Content-Type", "application/json");
+
+    // 发送请求
+    ajax.send(JSON.stringify({
+        url: longUrl
+    }));
+
+    ajax.onreadystatechange = function () {
+        if (ajax.readyState === 4 && ajax.status === 200) {
+            // 获取缩短后的网址
+            console.log(ajax.responseText);
+        }
+    }
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    $host = '{$Request.domain}';
+    $path = '/api/create';
+    $url = $host . $path;
+    $method = 'POST';
+    $content_type = 'application/json';
+
+    // TODO：设置待注册长网址
+    $bodys = array('url'=>'你的长网址');
+
+    // 配置headers
+    $headers = array('Content-Type:'.$content_type);
+
+    // 创建连接
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curl, CURLOPT_FAILONERROR, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($bodys));
+
+    // 发送请求
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    // 读取响应
+    var_dump($response);
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    #!/usr/bin/python
+    # -*- coding: utf-8 -*-
+    import requests
+    import json
+
+    host = '{$Request.domain}'
+    path = '/api/create'
+    url = host + path
+    method = 'POST'
+    content_type = 'application/json'
+
+    # TODO: 设置Token
+    token = '你的token'
+
+    # TODO：设置待创建的长网址
+    bodys = {'url':'你的长网址'}
+
+    # 配置headers
+    headers = {'Content-Type':content_type, 'Token':token}
+
+    # 发起请求
+    response = requests.post(url=url, data=json.dumps(bodys), headers=headers)
+
+    # 读取响应
+    print(response.text)
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>响应结果示例</h3>
+        <pre class="layui-code" style="height: auto">
+{
+    "Code": 0,
+    "ShortUrl": "{$Request.domain}/abcde",
+    "LongUrl": "{$Request.domain}/doc",
+    "ErrMsg": ""
+}
+    </pre>
+
+        <h3>响应参数说明</h3>
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="6">Code</td>
+                <td>int</td>
+                <td>0：正常返回短网址</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-1：短链接生成失败</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-2：长链接不合法</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-3：长链接存在安全隐患</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-4：长链接插入数据库失败</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-5：长链接在黑名单中，不允许注册</td>
+            </tr>
+            <tr>
+                <td>ShortUrl</td>
+                <td>string</td>
+                <td>短网址</td>
+            </tr>
+            <tr>
+                <td>LongUrl</td>
+                <td>string</td>
+                <td>长网址（原网址）</td>
+            </tr>
+            <tr>
+                <td>ErrMsg</td>
+                <td>string</td>
+                <td>错误信息</td>
+            </tr>
+            </tbody>
+        </table>
+    </ul>
+    <div class="layui-elem-quote">
+        <h2>短网址还原接口</h2>
+    </div>
+    <ul class="ul">
+        <h3>请求地址</h3>
+        <li>
+            <span>{$Request.domain}/api/query</span>
+        </li>
+        <h3>请求方式</h3>
+        <li>
+            <span>POST</span>
+        </li>
+        <h3>Content-Type:</h3>
+        <li>
+            <span>application/json; charset=UTF-8</span>
+        </li>
+        <h3>请求参数（Body）</h3>
+        <div style="width: 100%;overflow-x: scroll">
+            <table class="layui-table">
+            <thead>
+            <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>是否必须</th>
+                <th>说明</th>
+                <th>示例</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>shortUrl</td>
+                <td>string</td>
+                <td>必须</td>
+                <td>短网址</td>
+                <td>"{$Request.domain}/abcde"</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+        <h3>请求示例</h3>
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">Java</li>
+                <li>curl</li>
+                <li>Javascript</li>
+                <li>PHP</li>
+                <li>Python</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 15px 0">
+                <div class="layui-tab-item layui-show">
+                    <pre class="layui-code">
+
+    import java.io.BufferedReader;
+    import java.io.IOException;
+    import java.io.InputStreamReader;
+    import java.io.OutputStreamWriter;
+    import java.net.HttpURLConnection;
+    import java.net.URL;
+
+    import com.google.gson.Gson;
+    import com.google.gson.annotations.SerializedName;
+
+    public class DljBiz {
+        final static String CREATE_API = "{$Request.domain}/api/query";
+
+        class UrlResponse {
+            @SerializedName("Code")
+            private int code;
+
+            @SerializedName("ErrMsg")
+            private String errMsg;
+
+            @SerializedName("LongUrl")
+            private String longUrl;
+
+            @SerializedName("ShortUrl")
+            private String shortUrl;
+
+            public int getCode() {
+                return code;
+            }
+
+            public void setCode(int code) {
+                this.code = code;
+            }
+
+            public String getErrMsg() {
+                return errMsg;
+            }
+
+            public void setErrMsg(String errMsg) {
+                this.errMsg = errMsg;
+            }
+
+            public String getLongUrl() {
+                return longUrl;
+            }
+
+            public void setLongUrl(String longUrl) {
+                this.longUrl = longUrl;
+            }
+
+            public String getShortUrl() {
+                return shortUrl;
+            }
+
+            public void setShortUrl(String shortUrl) {
+                this.shortUrl = shortUrl;
+            }
+        }
+        /**
+         * 还原长网址短网址
+         *
+         * @param shortUrl 短网址
+         * @return  成功：长网址
+         *
+         */
+        public static String queryLongUrl(String shortUrl) {
+            String params = "{\"shortUrl\":\""+ shortUrl + "\"}";
+
+            BufferedReader reader = null;
+            try {
+                // 创建连接
+                URL url = new URL(CREATE_API);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setUseCaches(false);
+                connection.setInstanceFollowRedirects(true);
+                connection.setRequestMethod("POST"); // 设置请求方式
+                connection.setRequestProperty("Content-Type", "application/json"); // 设置发送数据的格式
+                connection.setRequestProperty("Token", TOKEN); // 设置发送数据的格式");
+
+                // 发起请求
+                connection.connect();
+                OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8"); // utf-8编码
+                out.append(params);
+                out.flush();
+                out.close();
+
+                // 读取响应
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                String line;
+                String res = "";
+                while ((line = reader.readLine()) != null) {
+                    res += line;
+                }
+                reader.close();
+
+                // 抽取生成长网址
+                UrlResponse urlResponse = new Gson().fromJson(res, UrlResponse.class);
+                if (urlResponse.getCode() == 0) {
+                    return urlResponse.getLongUrl();
+                } else {
+                    System.out.println(urlResponse.getErrMsg());
+                }
+
+                return ""; // TODO：自定义错误信息
+            } catch (IOException e) {
+                // TODO
+                e.printStackTrace();
+            }
+            return ""; // TODO：自定义错误信息
+        }
+
+        public static void main(String[] args) {
+            String res = queryLongUrl("你的短网址");
+            System.out.println(res);
+
+        }
+
+    }
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">    curl -H "Content-Type:application/json" -X POST "{$Request.domain}/api/query" -d '{"shortUrl":"你的短网址"}'
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    var ajax = new XMLHttpRequest();
+    var token = '你的token';
+    var shortUrl = '你的短网址';
+
+    ajax.open('post','{$Request.domain}/api/query', true);
+
+    ajax.setRequestHeader("Content-Type", "application/json");
+    ajax.setRequestHeader("Token", token);
+    // 发送请求
+    ajax.send(JSON.stringify({
+        shortUrl: shortUrl
+    }));
+
+    ajax.onreadystatechange = function () {
+        if (ajax.readyState === 4 && ajax.status === 200) {
+            // 短网址对应的长网址
+            console.log(ajax.responseText);
+        }
+    }
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    $host = '{$Request.domain}';
+    $path = '/api/query';
+    $url = $host . $path;
+    $method = 'POST';
+    $content_type = 'application/json';
+
+    // TODO: 设置Token
+    $token = '你的Token';
+
+    // TODO：设置还原的短网址
+    $bodys = array('shortUrl'=>'你的短网址');
+
+    // 设置headers
+    $headers = array('Content-Type:'.$content_type, 'Token:'.$token);
+
+    // 创建连接
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curl, CURLOPT_FAILONERROR, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($bodys));
+
+    // 发送请求
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    // 读取响应
+    var_dump($response);
+                    </pre>
+                </div>
+                <div class="layui-tab-item">
+                    <pre class="layui-code">
+    #!/usr/bin/python
+    # -*- coding: utf-8 -*-
+    import requests
+    import json
+
+    host = '{$Request.domain}'
+    path = '/api/query'
+    url = host + path
+    method = 'POST'
+    content_type = 'application/json'
+
+    # TODO: 设置Token
+    token = '你的token'
+
+    # TODO：设置待还原的短网址
+    bodys = {'shortUrl':'你的短网址'}
+
+    # 配置headers
+    headers = {'Content-Type':content_type, 'Token':token}
+
+    # 发起请求
+    response = requests.post(url=url, data=json.dumps(bodys), headers=headers)
+
+    # 读取响应
+    print(response.text)
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <h3>响应结果示例</h3>
+        <pre class="layui-code" style="height: auto">
+{
+    "Code": 0,
+    "ShortUrl": "{$Request.domain}/abcde",
+    "LongUrl": "{$Request.domain}/doc",
+    "ErrMsg": ""
+}
+    </pre>
+
+        <h3>响应参数说明</h3>
+        <table class="layui-table">
+            <thead>
+            <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>说明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td rowspan="4">Code</td>
+                <td>int</td>
+                <td>0：正常返回短链接</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-1：短链接不合法</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-2：短链接不存在</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>-3：短链接对应的长链接不合法</td>
+            </tr>
+            <tr>
+                <td>ShortUrl</td>
+                <td>string</td>
+                <td>短网址</td>
+            </tr>
+            <tr>
+                <td>LongUrl</td>
+                <td>string</td>
+                <td>长网址（原网址）</td>
+            </tr>
+            <tr>
+                <td>ErrMsg</td>
+                <td>string</td>
+                <td>错误信息</td>
+            </tr>
+            </tbody>
+        </table>
+    </ul>
+</div>
+
+{/block}
+
+{block name="script"}
+<script>
+    layui.use(['element','code','layer'], function(){
+
+    })
+</script>
+{/block}
